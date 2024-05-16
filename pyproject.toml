@@ -1,0 +1,21 @@
+[project]
+name = "driven-sho-real-time-driver"
+version = "0.1.0"
+description = "Physically model harmonic oscillator grid driven by an agent"
+authors = [
+    { name = "Arvin Kushwaha", email = "arvin.singh.kushwaha@gmail.com" }
+]
+dependencies = [
+    "torch>=2.3.0",
+]
+readme = "README.md"
+requires-python = ">= 3.12"
+license = { text = "MIT" }
+
+[tool.rye]
+managed = true
+virtual = true
+dev-dependencies = []
+
+[tool.rye.workspace]
+members = ["driving_agent"]
