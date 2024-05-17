@@ -14,4 +14,5 @@ Python binding are also provided.
 function of the system without using information on the harmonic oscillator
 system itself.
 
-These two parts are rather disjoint for now.
+These two parts are rather disjoint for now. For instructions on how to build
+each section, refer to the `README.md` files in each folder.
