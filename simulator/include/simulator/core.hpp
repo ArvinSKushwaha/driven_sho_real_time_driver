@@ -1,43 +1,93 @@
 #pragma once
 
+#include "fmt/core.h"
 #include <algorithm>
 #include <array>
 #include <cstddef>
-#include <valarray>
+#include <functional>
+#include <numeric>
 
 namespace simulator {
 
-template <typename T>
-struct OscillatorState {
-    std::slice_array<T> positions;
-    std::slice_array<T> velocities;
-    std::slice_array<T> forces;
+template <typename T, size_t Rows, size_t Cols = Rows>
+struct SimulatorState {
+    static const size_t rows = Rows, cols = Cols;
+    static const size_t n_dim = 2;
+
+    std::array<T, Rows * Cols * 2> pos;
+    std::array<T, Rows * Cols * 2> vel;
+    std::array<T, Rows * Cols * 2> acc;
+
+    static inline size_t index(size_t i, size_t j, size_t k) { return 2 * (i * Cols + j) + k; }
+
+    SimulatorState() {
+        pos.fill(0.);
+        vel.fill(0.);
+        acc.fill(0.);
+    }
+
+    void copy_to(SimulatorState &other) const {
+        std::copy(pos.begin(), pos.end(), other.pos.begin());
+        std::copy(vel.begin(), vel.end(), other.vel.begin());
+        std::copy(acc.begin(), acc.end(), other.acc.begin());
+    }
+
+    void compute_acc(SimulatorState &other) const {
+        copy_to(other);
+
+        for (size_t i = 0; i < Rows; i++) {
+            for (size_t j = 0; j < Cols; j++) {
+                other.acc[index(i, j, 0)] = -4. * pos[index(i, j, 0)];
+                other.acc[index(i, j, 1)] = -4. * pos[index(i, j, 1)];
+
+                if (i > 0) {
+                    other.acc[index(i, j, 0)] += pos[index(i - 1, j, 0)];
+                    other.acc[index(i, j, 1)] += pos[index(i - 1, j, 1)];
+                }
+
+                if (j > 0) {
+                    other.acc[index(i, j, 0)] += pos[index(i, j - 1, 0)];
+                    other.acc[index(i, j, 1)] += pos[index(i, j - 1, 1)];
+                }
+
+                if (i < Cols - 1) {
+                    other.acc[index(i, j, 0)] += pos[index(i + 1, j, 0)];
+                    other.acc[index(i, j, 1)] += pos[index(i + 1, j, 1)];
+                }
+
+                if (j < Cols - 1) {
+                    other.acc[index(i, j, 0)] += pos[index(i, j + 1, 0)];
+                    other.acc[index(i, j, 1)] += pos[index(i, j + 1, 1)];
+                }
+            }
+        }
+    }
 };
 
 template <typename T, size_t Rows, size_t Cols = Rows>
-struct SimulatorState {
-    SimulatorState(T spring_constant) : spring_constant(spring_constant), data(0., Rows * Cols) {}
+struct Simulator {
+    T stiffness;
 
-    OscillatorState<T> operator[](size_t i, size_t j) {
-        return {
-            .positions = data[std::slice(index(i, j), 2, 1)],
-            .velocities = data[std::slice(index(i, j) + 2, 2, 1)],
-            .forces = data[std::slice(index(i, j) + 4, 2, 1)],
-        };
-    }
+    SimulatorState<T, Rows, Cols> state;
+    SimulatorState<T, Rows, Cols> next_state;
 
-    const size_t rows = Rows, cols = Cols;
-    const size_t n_dim = 2;
+    void update(T dt) {
+        // move positions
+        for (size_t k = 0; k < state.pos.size(); k++) {
+            state.pos[k] += state.vel[k] * dt;
+        }
 
-    T spring_constant;
-    std::valarray<T> data;
+        // compute accelerations
+        state.compute_acc(next_state);
 
-    static inline size_t index(size_t i, size_t j) { return i * Cols + j; }
-    static inline std::array<size_t, 2> index(size_t i) { return std::array<size_t, 2>{i / Cols, i % Cols}; }
+        // move velocities
+        for (size_t k = 0; k < state.pos.size(); k++) {
+            next_state.vel[k] += (state.acc[k] + next_state.acc[k]) * dt / 2. * stiffness;
+        }
 
-    void copy_to(SimulatorState<T, Rows, Cols> &state) const {
-        state.spring_constant = spring_constant;
-        std::copy(std::begin(data), std::end(data), std::begin(state.data));
+        std::swap(state.pos, next_state.pos);
+        std::swap(state.vel, next_state.vel);
+        std::swap(state.acc, next_state.acc);
     }
 };
 

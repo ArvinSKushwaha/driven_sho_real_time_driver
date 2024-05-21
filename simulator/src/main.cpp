@@ -1,24 +1,21 @@
 #include "simulator/core.hpp"
+#include <algorithm>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
+#include <random>
+
 int main() {
-    simulator::SimulatorState<double, 5, 5> simulator(1.0);
-    simulator.data = 1.;
+    std::random_device rd{};
+    std::mt19937 rng{rd()};
+    std::normal_distribution<double> dst;
 
-    simulator::SimulatorState<double, 5, 5> simulator2(0.);
+    simulator::Simulator<double, 4, 4> simulator{.stiffness = 1.0};
+    std::for_each(simulator.state.vel.begin(), simulator.state.vel.end(), [&](auto &f) { f = dst(rng); });
 
-    fmt::println("{}", simulator.spring_constant);
-    fmt::println("{}", simulator.data);
-    fmt::println("{}", simulator2.spring_constant);
-    fmt::println("{}", simulator2.data);
-
-    simulator.copy_to(simulator2);
-
-    fmt::println("{}", simulator.spring_constant);
-    fmt::println("{}", simulator.data);
-    fmt::println("{}", simulator2.spring_constant);
-    fmt::println("{}", simulator2.data);
+    for (int i = 0; i < 100000; i++) {
+        simulator.update(1e-5);
+    }
 
     return 0;
 }
