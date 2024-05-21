@@ -1,0 +1,9 @@
+CompileFlags:
+    Remove:
+        - -rdc=true
+        - -ccbin=*
+        - -forward-unknown-to-host-compiler
+        - --generate-code=*
+        - -arch=*
+    Add:
+        - --cuda-gpu-arch=native
