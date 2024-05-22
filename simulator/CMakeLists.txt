@@ -18,10 +18,11 @@ FetchContent_MakeAvailable(fmt)
 
 find_package(fmt)
 find_package(Eigen3)
+find_package(TBB)
 
 add_subdirectory(src)
 
 target_compile_options(${PROJECT_NAME}
-  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler> $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic -Werror> -Wall)
+  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler> $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic -Werror -fopenmp> -Wall)
 target_include_directories(${PROJECT_NAME} PUBLIC include)
-target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt TBB::tbb)

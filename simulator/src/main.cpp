@@ -1,4 +1,4 @@
-#include "simulator/core.hpp"
+#include "simulator/core.h"
 #include <algorithm>
 #include <fmt/core.h>
 #include <fmt/ranges.h>
@@ -10,10 +10,11 @@ int main() {
     std::mt19937 rng{rd()};
     std::normal_distribution<double> dst;
 
-    simulator::Simulator<double, 4, 4> simulator{.stiffness = 1.0};
-    std::for_each(simulator.state.vel.begin(), simulator.state.vel.end(), [&](auto &f) { f = dst(rng); });
+    simulator::Simulator<double, 128> simulator(1.0);
+    std::for_each(simulator.state->vel.begin(), simulator.state->vel.end(), [&](auto &f) { f = dst(rng); });
 
     for (int i = 0; i < 100000; i++) {
+        fmt::println("{}", i);
         simulator.update(1e-5);
     }
 
