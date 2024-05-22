@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CUDA_ARCHITECTURES all)
 
-project(simulator CXX CUDA)
+project(simulator CXX)
 
 include(FetchContent)
 FetchContent_Declare(

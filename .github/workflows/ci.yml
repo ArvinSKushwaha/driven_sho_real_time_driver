@@ -18,6 +18,5 @@ jobs:
     - name: Configure and Build Project
       uses: threeal/cmake-action@main
       with:
-        generator: Ninja
         source-dir: simulator
         build-dir: simulator/build
