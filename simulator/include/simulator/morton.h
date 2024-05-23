@@ -15,7 +15,7 @@ constexpr auto morton() {
     arr[1] = 1;
 
     for (size_t k = 1; k < 8; k <<= 1) {
-        for (size_t i = (1 << k); i <= (1 << (k << 1)) - 1; i++) {
+        for (size_t i = (1ul << k); i <= (1ul << (k << 1)) - 1ul; i++) {
             arr[i] = (arr[i / (1 << k)] << (2 * k)) | arr[i % (1 << k)];
         }
     }

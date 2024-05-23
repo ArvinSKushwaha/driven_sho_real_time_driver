@@ -9,7 +9,7 @@
 #include "simulator/core.h"
 
 int main() {
-    const size_t N = 128;
+    const size_t N = 1024;
     const size_t T = 100000;
 
     std::random_device rd{};
@@ -21,7 +21,7 @@ int main() {
 
     auto A = tq::trange(T);
     const auto start{std::chrono::high_resolution_clock::now()};
-    for (int i = 0; i < T; i++) {
+    for (size_t i = 0; i < T; i++) {
         simulator.update(1e-5);
 
         const auto now{std::chrono::high_resolution_clock::now()};

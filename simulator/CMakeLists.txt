@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 set(CMAKE_CXX_STANDARD 23)
 
-set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CUDA_ARCHITECTURES all)
 
 project(simulator CXX)
@@ -22,7 +22,7 @@ find_package(OpenMP)
 add_subdirectory(src)
 
 target_compile_options(${PROJECT_NAME}
-  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler> $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic -Werror> -Wall -O3)
-target_link_options(${PROJECT_NAME} PUBLIC -fopenmp)
+  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler> $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic -Werror> -Wall -O3 -fopenmp -fopenmp-simd -Wno-tautological-compare)
+target_link_options(${PROJECT_NAME} PUBLIC -fopenmp -fopenmp-simd)
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)

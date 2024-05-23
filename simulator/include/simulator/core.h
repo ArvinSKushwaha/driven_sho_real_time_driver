@@ -21,6 +21,7 @@ struct SimulatorState {
     std::array<T, Rows * Cols * 2> vel;
     std::array<T, Rows * Cols * 2> acc;
 
+    // Standard Indexing
     // static inline size_t index(size_t i, size_t j, bool k) { return ((i * cols + j) << 1) + k; }
     // static inline std::array<size_t, 2> deindex(size_t k) { return {k / cols, k % cols}; }
 
@@ -40,7 +41,7 @@ struct SimulatorState {
         auto othervel = other->vel.data();
         auto otheracc = other->acc.data();
 
-#pragma omp parallel for schedule(static, 65536) simd
+#pragma omp parallel for simd schedule(static, 1024)
         for (size_t k = 0; k < 2 * Rows * Cols; k++) {
             otherpos[k] = pos[k];
             othervel[k] = vel[k];
@@ -52,7 +53,7 @@ struct SimulatorState {
         copy_to(other);
         auto otheracc = other->acc.data();
 
-#pragma omp parallel for collapse(2) schedule(static, 65536)
+#pragma omp parallel for simd collapse(2) schedule(static, 1024)
         for (size_t i = 0; i < Rows; i++) {
             for (size_t j = 0; j < Rows; j++) {
                 otheracc[index(i, j, 0)] = -4. * pos[index(i, j, 0)];
@@ -105,7 +106,7 @@ struct Simulator {
         auto prevpos = next_state->pos.data();
 
         // move positions
-#pragma omp parallel for schedule(static, 65536) simd
+#pragma omp parallel for simd schedule(static, 1024)
         for (size_t k = 0; k < 2 * Rows * Cols; k++) {
             statepos[k] = prevpos[k] + statevel[k] * dt;
         }
@@ -117,7 +118,7 @@ struct Simulator {
         auto nextacc = next_state->acc.data();
 
         // move velocities
-#pragma omp parallel for schedule(static, 65536) simd
+#pragma omp parallel for simd schedule(static, 1024)
         for (size_t k = 0; k < 2 * Rows * Cols; k++) {
             nextvel[k] = statevel[k] + (stateacc[k] + nextacc[k]) * dt / 2. * stiffness;
         }
