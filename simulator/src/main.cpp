@@ -9,7 +9,7 @@
 #include "simulator/core.h"
 
 int main() {
-    const size_t N = 1024;
+    const size_t N = 128;
     const size_t T = 100000;
 
     std::random_device rd{};
