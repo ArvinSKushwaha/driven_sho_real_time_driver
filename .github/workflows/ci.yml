@@ -22,3 +22,13 @@ jobs:
       with:
         source-dir: simulator
         build-dir: simulator/build
+        cxx-flags: -Xpreprocessor -fopenmp
+      if: runner.os == 'macOS'
+
+
+    - name: Configure and Build Project
+      uses: threeal/cmake-action@main
+      with:
+        source-dir: simulator
+        build-dir: simulator/build
+      if: runner.os != 'macOS'
