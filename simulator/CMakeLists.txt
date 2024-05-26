@@ -22,7 +22,15 @@ find_package(OpenMP)
 add_subdirectory(src)
 
 target_compile_options(${PROJECT_NAME}
-  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler> $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic -Werror> -Wall -O3 -fopenmp -fopenmp-simd -Wno-tautological-compare)
+    PRIVATE 
+    $<$<COMPILE_LANGUAGE:CUDA>:
+        -Xcompiler>
+    $<$<COMPILE_LANGUAGE:CXX>:
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:
+            -Wpedantic>
+        -Werror>
+    -Wall -O3 -fopenmp -fopenmp-simd -Wno-tautological-compare)
+
 target_link_options(${PROJECT_NAME} PUBLIC -fopenmp -fopenmp-simd)
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
