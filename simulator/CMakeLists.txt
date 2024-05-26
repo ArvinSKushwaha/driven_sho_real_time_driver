@@ -26,8 +26,8 @@ target_compile_options(${PROJECT_NAME}
     $<$<COMPILE_LANGUAGE:CUDA>:
         -Xcompiler>
     $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
-            -Wpedantic -Werror>
-    -Wall -O3 -fopenmp -fopenmp-simd -Wno-tautological-compare)
+            -Wpedantic -Werror -Wno-tautological-compare>
+    -Wall -O3 -fopenmp -fopenmp-simd)
 
 target_link_options(${PROJECT_NAME} PUBLIC -fopenmp -fopenmp-simd)
 target_include_directories(${PROJECT_NAME} PUBLIC include)
