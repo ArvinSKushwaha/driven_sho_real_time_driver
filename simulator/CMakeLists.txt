@@ -8,12 +8,12 @@ project(simulator CXX)
 
 include(FetchContent)
 FetchContent_Declare(
-	fmt
-	GIT_REPOSITORY	https://github.com/fmtlib/fmt.git
-    GIT_TAG 	    e69e5f977d458f2650bb346dadf2ad30c5320281 # Release 10.2.1 (04.01.24)
-    GIT_SHALLOW TRUE
-    GIT_PROGRESS TRUE
-    OVERRIDE_FIND_PACKAGE)
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG e69e5f977d458f2650bb346dadf2ad30c5320281 # Release 10.2.1 (04.01.24)
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+  OVERRIDE_FIND_PACKAGE)
 FetchContent_MakeAvailable(fmt)
 
 find_package(fmt)
@@ -21,13 +21,19 @@ find_package(OpenMP)
 
 add_subdirectory(src)
 
-target_compile_options(${PROJECT_NAME}
-    PRIVATE 
-    $<$<COMPILE_LANGUAGE:CUDA>:
-        -Xcompiler>
-    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
-            -Wpedantic -Werror -Wno-tautological-compare>
-    -Wall -O3 -fopenmp -fopenmp-simd)
+target_compile_options(
+  ${PROJECT_NAME}
+  PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+          -Xcompiler>
+          $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:
+          -Wpedantic
+          -Werror
+          -Wno-tautological-compare>
+          -Wall
+          -O3
+          -fopenmp
+          -fopenmp-simd
+          -ftree-vectorize)
 
 target_link_options(${PROJECT_NAME} PUBLIC -fopenmp -fopenmp-simd)
 target_include_directories(${PROJECT_NAME} PUBLIC include)
