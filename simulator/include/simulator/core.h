@@ -25,13 +25,13 @@ struct SimulatorState {
     std::array<T, Rows * Cols * 2> acc;
 
     // Standard Indexing
-    // static inline size_t index(size_t i, size_t j, bool k) { return ((i * cols + j) << 1) + k; }
-    // static inline std::array<size_t, 2> deindex(size_t k) { return {k / cols, k % cols}; }
+    constexpr static inline size_t index(size_t i, size_t j, bool k) { return ((i * cols + j) << 1) + k; }
+    constexpr static inline std::array<size_t, 2> deindex(size_t k) { return {k / cols, k % cols}; }
 
     // Morton Indexing
-    constexpr static inline size_t index(size_t i, size_t j, bool k) {
-        return (SIM_MORTON_LUT[i] << 2) + (SIM_MORTON_LUT[j] << 1) + k;
-    }
+    // constexpr static inline size_t index(size_t i, size_t j, bool k) {
+    //     return (SIM_MORTON_LUT[i] << 2) + (SIM_MORTON_LUT[j] << 1) + k;
+    // }
 
     SimulatorState() {
         pos.fill(0.);
